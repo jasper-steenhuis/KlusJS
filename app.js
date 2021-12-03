@@ -8,32 +8,54 @@ function createObjectAndAppendHTML() {
         var taskObject = { desc: input.value, markup: " ", priority: false };
         tasks.push(taskObject);
         input.value = " ";
-        appendToHTML(taskObject);
-        addButtonToTask(taskObject);
+        appendToHTML(taskObject, "todo");
     } else {
         alert("Task name must not be empty!");
     }
 }
 function addButtonToTask(task) {
-    let buttonElement = document.createElement("BUTTON");
-    buttonElement.innerHTML = "-";
-    task.markup.appendChild(buttonElement);
-    buttonElement.onclick = function () {
-        task.markup.style.setProperty('text-decoration', 'line-through');
-        removeFromList(task);
+    let doneButton = document.createElement("INPUT");
+    var checked = false;
+    doneButton.setAttribute("type", "checkbox");
+    doneButton.innerHTML = "✓";
+    task.markup.appendChild(doneButton);
+    doneButton.onclick = function () {
+        checked = !checked;
+        if (checked) {
+            task.markup.style.setProperty('text-decoration', 'line-through');
+            removeFromHTML(task,"todo");
+
+        } else {
+            task.markup.style.setProperty('text-decoration', 'none');
+            removeFromHTML(task,"done");
+        }
+
     }
 }
-function removeFromList(task) {
-    var index = tasks.indexOf(task);
-    if (index > -1) {
-        tasks.splice(index, 1);
-    }
-    console.log(tasks);
-}
-function appendToHTML(task) {
+function appendToHTML(task, destination) {
+
     let taskListHTML = document.getElementById("task-list");
+    let doneListHTML = document.getElementById("accomplished-tasks-list");
     task.markup = document.createElement("LI");
     let textNode = document.createTextNode(task.desc);
+    addButtonToTask(task);
     task.markup.appendChild(textNode);
-    taskListHTML.appendChild(task.markup);
+    if (destination == "todo") {
+        taskListHTML.appendChild(task.markup);
+    }
+    if (destination == "done") {
+        doneListHTML.appendChild(task.markup);
+    }
+}
+function removeFromHTML(task, destination) {
+    let taskListHTML = document.getElementById("task-list");
+    let doneListHTML = document.getElementById("accomplished-tasks-list");
+
+    if (destination == "todo") {
+        taskListHTML.removeChild(task.markup);
+        appendToHTML(task, "done");
+    }
+    if (destination == "done") {
+        doneListHTML.remove(task.markup);
+appendToHTML(task, "todo");    }
 }
